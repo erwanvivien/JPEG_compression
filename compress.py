@@ -66,29 +66,53 @@ def blocks_8x8(image):
     return list(blocks_8x8_generator(image))
 
 
-def get_dct_coefs_8x8_generator():
-    # using
-    # https://www-ljk.imag.fr/membres/Valerie.Perrier/SiteWeb/node9.html
-    sqrt_1_n = 1 / math.sqrt(8)
-    sqrt_2_n = math.sqrt(2 / 8)
-
-    for i, j in itertools.product(range(8), range(8)):
-        if i == 0:
-            yield (sqrt_1_n)
-        elif i > 0:
-            yield (sqrt_2_n * math.cos(
-                (2*j + 1) * (i * math.pi) / 16
-            ))
+def DCT_cosine_8x8(x: float, i):
+    return math.cos(
+        (i * (2 * x + 1) * math.pi) / 16
+    )
 
 
-def get_dct_coefs_8x8(height=8, width=8):
+def DCT_coefficients_8x8(i: int, j: int):
+    # result = 1 / math.sqrt(16)
+    result = 1
+
+    if i == 0:
+        result *= math.sqrt(1 / 8)
+    else:
+        result *= math.sqrt(2 / 8)
+
+    if j == 0:
+        result *= math.sqrt(1 / 8)
+    else:
+        result *= math.sqrt(2 / 8)
+
+    return result
+
+
+def get_dct_coefs_8x8_generator(image):
+    range8 = range(8)
+    for i, j in itertools.product(range8, range8):
+        tmp = 0.0
+
+        for y, x in itertools.product(range8, range8):
+            tmp += (DCT_cosine_8x8(x, i) *
+                    DCT_cosine_8x8(y, j) *
+                    (image[y + x * 8] - 128))
+
+        tmp *= DCT_coefficients_8x8(i, j)
+
+        yield round(tmp)
+
+
+def get_dct_coefs_8x8(image):
     """
-    `@params`: a width and height
+    `@params`: an greyscale image (1D)
 
-    `@returns`: DCT for each image block
+    `@returns`: generates a DCT for an image block
     """
 
-    return np.array(list(get_dct_coefs_8x8_generator()))
+    assert len(image) == 64
+    return list(get_dct_coefs_8x8_generator(image))
 
 
 def extract_channel(image, channel_name):
@@ -111,16 +135,43 @@ def extract_channel(image, channel_name):
 
 
 if __name__ == "__main__":
-    filename: str = 'color.jpg'
-    image = imageio.imread(filename)
+    # filename: str = 'color.jpg'
 
-    height, width, depth = get_dimensions(image)
+    # image = imageio.imread(filename)
+    # height, width, depth = get_dimensions(image)
 
-    padded_img = padding_8x8(image)
-    blocks = blocks_8x8(padded_img)
+    # padded_img = padding_8x8(image)
+    # blocks = blocks_8x8(padded_img)
 
-    C = get_dct_coefs_8x8()
-    Ct = np.matrix.transpose(C)
+    # C = get_dct_coefs_8x8()
+    # Ct = np.matrix.transpose(C)
 
-    # test_block = extract_channel(blocks[6], "red")
+    # test_block = extract_channel(blocks[6], "green")
     # imageio.imwrite("out.jpg", test_block)
+
+
+def test_dct_1():
+    input_pixel_matrix = [140, 144, 147, 140, 140, 155, 179, 175,
+                          144, 152, 140, 147, 140, 148, 167, 179,
+                          152, 155, 136, 167, 163, 162, 152, 172,
+                          168, 145, 156, 160, 152, 155, 136, 160,
+                          162, 148, 156, 148, 140, 136, 147, 162,
+                          147, 167, 140, 155, 155, 140, 136, 162,
+                          136, 156, 123, 167, 162, 144, 140, 147,
+                          148, 155, 136, 155, 152, 147, 147, 136]
+
+    output_pixel_matrix_expected = [186, -18, 15, -9, 23, -9, -14, -19,
+                                    21, -34, 26, -9, -11, 11, 14, 7,
+                                    -10, -24, -2, 6, -18, 3, -20, -1,
+                                    -8, -5, 14, -15, -8, -3, -3, 8,
+                                    -3, 10, 8, 1, -11, 18, 18, 15,
+                                    4, -2, -18, 8, 8, -4, 1, -7,
+                                    9, 1, -3, 4, -1, -7, -1, -2,
+                                    0, -8, -2, 2, 1, 4, -6, 0]
+
+    output_pixel_matrix = get_dct_coefs_8x8(input_pixel_matrix)
+
+    for i in range(64):
+        if output_pixel_matrix[i] != output_pixel_matrix_expected[i]:
+            print("test_dct_1", i,
+                  output_pixel_matrix[i], output_pixel_matrix_expected[i])
