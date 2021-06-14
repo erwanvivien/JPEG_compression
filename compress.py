@@ -5,6 +5,9 @@ import numpy as np
 import itertools
 import math
 
+import decimal
+
+
 JPEG_MATRIX_QUANTIFICATION = [16, 11, 10, 16, 24, 40, 51, 61,
                               12, 12, 14, 19, 26, 58, 60, 55,
                               14, 13, 16, 24, 40, 57, 69, 56,
@@ -98,7 +101,7 @@ def DCT_coefficients_8x8(i: int, j: int):
     return result
 
 
-def get_dct_coefs_8x8_generator(image):
+def DCT_coeffs_8x8_generator(image):
     range8 = range(8)
     for i, j in itertools.product(range8, range8):
         tmp = 0.0
@@ -113,7 +116,7 @@ def get_dct_coefs_8x8_generator(image):
         yield round(tmp)
 
 
-def get_dct_coefs_8x8(image):
+def DCT_coeffs_8x8(image):
     """
     `@params`: an greyscale image (1D)
 
@@ -143,7 +146,21 @@ def extract_channel(image, channel_name):
     return image[:, :, idx]
 
 
+def round_half(f: float):
+    return decimal.Decimal(f).to_integral_value(rounding=decimal.ROUND_HALF_UP)
+
+
+def quantization(dct):
+    assert len(dct) == 64
+    for i in range(64):
+        dct[i] /= JPEG_MATRIX_QUANTIFICATION[i]
+        dct[i] = round_half(dct[i])
+
+    return dct
+
+
 if __name__ == "__main__":
+    pass
     # filename: str = 'color.jpg'
 
     # image = imageio.imread(filename)
@@ -151,9 +168,6 @@ if __name__ == "__main__":
 
     # padded_img = padding_8x8(image)
     # blocks = blocks_8x8(padded_img)
-
-    # C = get_dct_coefs_8x8()
-    # Ct = np.matrix.transpose(C)
 
     # test_block = extract_channel(blocks[6], "green")
     # imageio.imwrite("out.jpg", test_block)
@@ -178,9 +192,38 @@ def test_dct_1():
                                     9, 1, -3, 4, -1, -7, -1, -2,
                                     0, -8, -2, 2, 1, 4, -6, 0]
 
-    output_pixel_matrix = get_dct_coefs_8x8(input_pixel_matrix)
+    output_pixel_matrix = DCT_coeffs_8x8(input_pixel_matrix)
 
     for i in range(64):
         if output_pixel_matrix[i] != output_pixel_matrix_expected[i]:
             print("test_dct_1", i,
                   output_pixel_matrix[i], output_pixel_matrix_expected[i])
+
+
+def test_division_wise_1():
+    input_dct = [
+        -415, -30, -61, 27, 56, -20, -2, 0,
+        4, -22, -61, 10, 13, -7, -9, 5,
+        -47, 7, 77, -25, -29, 10, 5, -6,
+        -49, 12, 34, -15, -10, 6, 2, 2,
+        12, -7, -13, -4, -2, 2, -3, 3,
+        -8, 3, 2, -6, -2, 1, 4, 2,
+        -1, 0, 0, -2, -1, -3, 4, -1,
+        0, 0, -1, -4, -1, 0, 1, 2]
+
+    output_expected = [
+        -26, -3, -6, 2, 2, -1, 0, 0,
+        0, -2, -4, 1, 1, 0, 0, 0,
+        -3, 1, 5, -1, -1, 0, 0, 0,
+        -3, 1, 2, -1, 0, 0, 0, 0,
+        1, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+    ]
+
+    output = quantization(input_dct)
+    for i in range(64):
+        if output[i] != output_expected[i]:
+            print("test_division_wise_1:", i, "\n",
+                  output[i],  output_expected[i])
