@@ -159,6 +159,28 @@ def quantization(dct):
     return dct
 
 
+def zigzag_generator(input_qtz):
+    solution = [[] for i in range(8 + 8 - 1)]
+
+    for i in range(8):
+        for j in range(8):
+            sum = i + j
+            if (sum % 2 == 0):
+                solution[sum].insert(0, input_qtz[i * 8 + j])
+            else:
+                solution[sum].append(input_qtz[i * 8 + j])
+
+    return [e for l in solution for e in l]
+
+
+def zigzag(quantized):
+    assert len(quantized) == 64
+    l = list(zigzag_generator(quantized))
+    while l[-1] == 0:
+        del l[-1]
+    return l
+
+
 if __name__ == "__main__":
     pass
     # filename: str = 'color.jpg'
@@ -227,3 +249,21 @@ def test_division_wise_1():
         if output[i] != output_expected[i]:
             print("test_division_wise_1:", i, "\n",
                   output[i],  output_expected[i])
+
+
+def test_zigzag():
+    input_qtz = [
+        -26, -3, -6, 2, 2, -1, 0, 0,
+        0, -2, -4, 1, 1, 0, 0, 0,
+        -3, 1, 5, -1, -1, 0, 0, 0,
+        -3, 1, 2, -1, 0, 0, 0, 0,
+        1, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+    ]
+
+    print(zigzag(input_qtz))
+
+
+test_zigzag()
