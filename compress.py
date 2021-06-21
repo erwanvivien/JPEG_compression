@@ -8,6 +8,9 @@ import math
 import decimal
 import unittest
 
+from tables import DCTable
+from tables import ACTable
+
 JPEG_MATRIX_QUANTIFICATION = [16, 11, 10, 16, 24, 40, 51, 61,
                               12, 12, 14, 19, 26, 58, 60, 55,
                               14, 13, 16, 24, 40, 57, 69, 56,
@@ -181,25 +184,7 @@ def zigzag(quantized):
     return l
 
 
-DCTable = [
-    (0b010, 3, 0), (0b011, 4, 1), (0b100, 5, 2), (0b00, 5, 3),
-    (0b101, 7, 4), (0b110, 8, 5), (0b1110, 10, 6),
-    (0b11110, 12, 7), (0b111110, 14, 8), (0b1111110, 16, 9),
-    (0b11111110, 18, 10), (0b111111110, 20, 11)
-    # , 0b1111111110, 0b11111111110, 0b111111111110, 0b1111111111110
-]
-
-DCTable = [{"basecode": e[0],
-            "length": e[1],
-            "shift": e[2]} for e in DCTable]
-
-
-ACTable = [
-
-]
-
-
-def huffman_category_DC(n):
+def huffman_category(n):
     absN = abs(n)
     if absN <= 1:
         return absN
@@ -211,7 +196,7 @@ def huffman_category_DC(n):
         inf, sup = sup, sup * 2
 
 
-def huffman_number_DC(n):
+def huffman_number(n):
     if n >= 0:
         return n
 
@@ -227,11 +212,19 @@ def huffman_number_DC(n):
 
 
 def huffman_DC_encoding(n):
-    cat = huffman_category_DC(n)
+    cat = huffman_category(n)
     vals = DCTable[cat]
     basecode, shift = vals["basecode"], vals["shift"]
 
-    return basecode << shift | huffman_number_DC(n)
+    return basecode << shift | huffman_number(n)
+
+
+def huffman_AC_encoding(n, zeros=0):
+    cat = huffman_category(n)
+    vals = ACTable[zeros][cat]
+    basecode, shift = vals["basecode"], vals["shift"]
+
+    return basecode << shift | huffman_number(n)
 
 
 class TestJPEG(unittest.TestCase):
@@ -311,20 +304,26 @@ class TestJPEG(unittest.TestCase):
         self.assertListEqual(zigzag(input_qtz), output_expected)
 
     def test_huffman_number(self):
-        self.assertEqual(huffman_number_DC(-5), 2)
-        self.assertEqual(huffman_number_DC(-3), 0)
-        self.assertEqual(huffman_number_DC(-2), 1)
-        self.assertEqual(huffman_number_DC(2), 2)
-        self.assertEqual(huffman_number_DC(3), 3)
-        self.assertEqual(huffman_number_DC(-1024), 1023)
-        self.assertEqual(huffman_number_DC(1024), 1024)
-        self.assertEqual(huffman_number_DC(-35), 28)
+        self.assertEqual(huffman_number(-5), 2)
+        self.assertEqual(huffman_number(-3), 0)
+        self.assertEqual(huffman_number(-2), 1)
+        self.assertEqual(huffman_number(2), 2)
+        self.assertEqual(huffman_number(3), 3)
+        self.assertEqual(huffman_number(-1024), 1023)
+        self.assertEqual(huffman_number(1024), 1024)
+        self.assertEqual(huffman_number(-35), 28)
 
-    def test_huffman_encoding(self):
+    def test_huffman_encoding_DC(self):
         self.assertEqual(huffman_DC_encoding(-3), 16)
         self.assertEqual(huffman_DC_encoding(3), 19)
         self.assertEqual(huffman_DC_encoding(-1), 6)
         self.assertEqual(huffman_DC_encoding(1), 7)
+
+    def test_huffman_encoding_AC(self):
+        self.assertEqual(huffman_AC_encoding(3, 0), 7)
+        for i in range(0, 14):
+            self.assertEqual(huffman_AC_encoding(-3, i),
+                             ACTable[i][2]["basecode"] << ACTable[i][2]["shift"])
 
 
 if __name__ == "__main__":
