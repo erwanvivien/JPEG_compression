@@ -124,7 +124,7 @@ def DCT_coeffs_8x8(image):
     """
 
     assert len(image) == 64
-    return list(get_dct_coefs_8x8_generator(image))
+    return list(DCT_coeffs_8x8_generator(image))
 
 
 def extract_channel(image, channel_name):
