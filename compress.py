@@ -353,6 +353,7 @@ class TestJPEG(unittest.TestCase):
         self.assertEqual(huffman_AC_encoding(-1, 11), 0b1111110100)
         self.assertEqual(huffman_AC_encoding(-1, 12), 0b11111110100)
         self.assertEqual(huffman_AC_encoding(-1, 13), 0b111111110100)
+
         self.assertEqual(huffman_AC_encoding(-3, 1), 0b11100100)
         self.assertEqual(huffman_AC_encoding(-3, 2), 0b1111100000)
         self.assertEqual(huffman_AC_encoding(-3, 3), 0b11111011100)
@@ -366,6 +367,7 @@ class TestJPEG(unittest.TestCase):
         self.assertEqual(huffman_AC_encoding(-3, 11), 0b111111111101000100)
         self.assertEqual(huffman_AC_encoding(-3, 12), 0b111111111101101000)
         self.assertEqual(huffman_AC_encoding(-3, 13), 0b111111111110001100)
+
         # self.assertEqual(huffman_AC_encoding(-7, 1), 0b   )
         # self.assertEqual(huffman_AC_encoding(-7, 2), 0b   )
         # self.assertEqual(huffman_AC_encoding(-7, 3), 0b   )
@@ -379,6 +381,7 @@ class TestJPEG(unittest.TestCase):
         # self.assertEqual(huffman_AC_encoding(-7, 11), 0b   )
         # self.assertEqual(huffman_AC_encoding(-7, 12), 0b   )
         # self.assertEqual(huffman_AC_encoding(-7, 13), 0b   )
+
         # self.assertEqual(huffman_AC_encoding(-15, 1), 0b   )
         # self.assertEqual(huffman_AC_encoding(-15, 2), 0b   )
         # self.assertEqual(huffman_AC_encoding(-15, 3), 0b   )
@@ -392,6 +395,7 @@ class TestJPEG(unittest.TestCase):
         # self.assertEqual(huffman_AC_encoding(-15, 11), 0b   )
         # self.assertEqual(huffman_AC_encoding(-15, 12), 0b   )
         # self.assertEqual(huffman_AC_encoding(-15, 13), 0b   )
+
         # self.assertEqual(huffman_AC_encoding(-31, 1), 0b   )
         # self.assertEqual(huffman_AC_encoding(-31, 2), 0b   )
         # self.assertEqual(huffman_AC_encoding(-31, 3), 0b   )
@@ -405,6 +409,7 @@ class TestJPEG(unittest.TestCase):
         # self.assertEqual(huffman_AC_encoding(-31, 11), 0b   )
         # self.assertEqual(huffman_AC_encoding(-31, 12), 0b   )
         # self.assertEqual(huffman_AC_encoding(-31, 13), 0b   )
+
         # self.assertEqual(huffman_AC_encoding(-63, 1), 0b   )
         # self.assertEqual(huffman_AC_encoding(-63, 2), 0b   )
         # self.assertEqual(huffman_AC_encoding(-63, 3), 0b   )
@@ -418,6 +423,7 @@ class TestJPEG(unittest.TestCase):
         # self.assertEqual(huffman_AC_encoding(-63, 11), 0b   )
         # self.assertEqual(huffman_AC_encoding(-63, 12), 0b   )
         # self.assertEqual(huffman_AC_encoding(-63, 13), 0b   )
+
         # self.assertEqual(huffman_AC_encoding(-127, 1), 0b   )
         # self.assertEqual(huffman_AC_encoding(-127, 2), 0b   )
         # self.assertEqual(huffman_AC_encoding(-127, 3), 0b   )
@@ -431,6 +437,7 @@ class TestJPEG(unittest.TestCase):
         # self.assertEqual(huffman_AC_encoding(-127, 11), 0b   )
         # self.assertEqual(huffman_AC_encoding(-127, 12), 0b   )
         # self.assertEqual(huffman_AC_encoding(-127, 13), 0b   )
+
         # self.assertEqual(huffman_AC_encoding(-255, 1), 0b   )
         # self.assertEqual(huffman_AC_encoding(-255, 2), 0b   )
         # self.assertEqual(huffman_AC_encoding(-255, 3), 0b   )
@@ -444,6 +451,7 @@ class TestJPEG(unittest.TestCase):
         # self.assertEqual(huffman_AC_encoding(-255, 11), 0b   )
         # self.assertEqual(huffman_AC_encoding(-255, 12), 0b   )
         # self.assertEqual(huffman_AC_encoding(-255, 13), 0b   )
+
         # self.assertEqual(huffman_AC_encoding(-511, 1), 0b   )
         # self.assertEqual(huffman_AC_encoding(-511, 2), 0b   )
         # self.assertEqual(huffman_AC_encoding(-511, 3), 0b   )
@@ -457,6 +465,7 @@ class TestJPEG(unittest.TestCase):
         # self.assertEqual(huffman_AC_encoding(-511, 11), 0b   )
         # self.assertEqual(huffman_AC_encoding(-511, 12), 0b   )
         # self.assertEqual(huffman_AC_encoding(-511, 13), 0b   )
+
         # self.assertEqual(huffman_AC_encoding(-1023, 1), 0b   )
         # self.assertEqual(huffman_AC_encoding(-1023, 2), 0b   )
         # self.assertEqual(huffman_AC_encoding(-1023, 3), 0b   )
