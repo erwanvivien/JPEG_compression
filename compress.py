@@ -181,18 +181,44 @@ def zigzag(quantized):
     return l
 
 
+def huffman_category(n, DC=True):
+    if DC == False:
+        if n == 0 or n >= 16384:
+            return -1
+
+    assert(n >= 0 and n < 32768)
+
+    absN = abs(n)
+    if absN <= 1:
+        return absN
+
+    inf, sup = 2, 4
+    for i in range(1, 16):
+        if absN >= inf and absN < sup:
+            return i+1
+        inf, sup = sup, sup * 2
+
+
+def huffman_number(n, DC=True):
+    if n >= 0:
+        return n
+    absN = abs(n)
+    if absN <= 1:
+        return absN
+
+    inf, sup = 0, 1
+    for i in range(-1, 16):
+        if absN >= inf and absN < sup:
+            break
+        inf, sup = sup, sup * 2
+
+    if n < 0:
+        n += (sup - 1)
+    return n
+
+
 if __name__ == "__main__":
     pass
-    # filename: str = 'color.jpg'
-
-    # image = imageio.imread(filename)
-    # height, width, depth = get_dimensions(image)
-
-    # padded_img = padding_8x8(image)
-    # blocks = blocks_8x8(padded_img)
-
-    # test_block = extract_channel(blocks[6], "green")
-    # imageio.imwrite("out.jpg", test_block)
 
 
 class TestStringMethods(unittest.TestCase):
