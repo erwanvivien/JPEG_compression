@@ -6,7 +6,7 @@ import itertools
 import math
 
 import decimal
-
+import unittest
 
 JPEG_MATRIX_QUANTIFICATION = [16, 11, 10, 16, 24, 40, 51, 61,
                               12, 12, 14, 19, 26, 58, 60, 55,
@@ -195,75 +195,80 @@ if __name__ == "__main__":
     # imageio.imwrite("out.jpg", test_block)
 
 
-def test_dct_1():
-    input_pixel_matrix = [140, 144, 147, 140, 140, 155, 179, 175,
-                          144, 152, 140, 147, 140, 148, 167, 179,
-                          152, 155, 136, 167, 163, 162, 152, 172,
-                          168, 145, 156, 160, 152, 155, 136, 160,
-                          162, 148, 156, 148, 140, 136, 147, 162,
-                          147, 167, 140, 155, 155, 140, 136, 162,
-                          136, 156, 123, 167, 162, 144, 140, 147,
-                          148, 155, 136, 155, 152, 147, 147, 136]
+class TestStringMethods(unittest.TestCase):
+    def test_dct_1(self):
+        input_pixel_matrix = [140, 144, 147, 140, 140, 155, 179, 175,
+                              144, 152, 140, 147, 140, 148, 167, 179,
+                              152, 155, 136, 167, 163, 162, 152, 172,
+                              168, 145, 156, 160, 152, 155, 136, 160,
+                              162, 148, 156, 148, 140, 136, 147, 162,
+                              147, 167, 140, 155, 155, 140, 136, 162,
+                              136, 156, 123, 167, 162, 144, 140, 147,
+                              148, 155, 136, 155, 152, 147, 147, 136]
 
-    output_pixel_matrix_expected = [186, -18, 15, -9, 23, -9, -14, -19,
-                                    21, -34, 26, -9, -11, 11, 14, 7,
-                                    -10, -24, -2, 6, -18, 3, -20, -1,
-                                    -8, -5, 14, -15, -8, -3, -3, 8,
-                                    -3, 10, 8, 1, -11, 18, 18, 15,
-                                    4, -2, -18, 8, 8, -4, 1, -7,
-                                    9, 1, -3, 4, -1, -7, -1, -2,
-                                    0, -8, -2, 2, 1, 4, -6, 0]
+        output_pixel_matrix_expected = [186, -18, 15, -9, 23, -9, -14, -19,
+                                        21, -34, 26, -9, -11, 11, 14, 7,
+                                        -10, -24, -2, 6, -18, 3, -20, -1,
+                                        -8, -5, 14, -15, -8, -3, -3, 8,
+                                        -3, 10, 8, 1, -11, 18, 18, 15,
+                                        4, -2, -18, 8, 8, -4, 1, -7,
+                                        9, 1, -3, 4, -1, -7, -1, -2,
+                                        0, -8, -2, 2, 1, 4, -6, 0]
 
-    output_pixel_matrix = DCT_coeffs_8x8(input_pixel_matrix)
+        output_pixel_matrix = DCT_coeffs_8x8(input_pixel_matrix)
 
-    for i in range(64):
-        if output_pixel_matrix[i] != output_pixel_matrix_expected[i]:
-            print("test_dct_1", i,
-                  output_pixel_matrix[i], output_pixel_matrix_expected[i])
+        self.assertListEqual(output_pixel_matrix, output_pixel_matrix_expected)
+        # for i in range(64):
+        #     if output_pixel_matrix[i] != output_pixel_matrix_expected[i]:
+        #         print("test_dct_1", i,
+        #               output_pixel_matrix[i], output_pixel_matrix_expected[i])
 
+    def test_division_wise_1(self):
+        input_dct = [
+            -415, -30, -61, 27, 56, -20, -2, 0,
+            4, -22, -61, 10, 13, -7, -9, 5,
+            -47, 7, 77, -25, -29, 10, 5, -6,
+            -49, 12, 34, -15, -10, 6, 2, 2,
+            12, -7, -13, -4, -2, 2, -3, 3,
+            -8, 3, 2, -6, -2, 1, 4, 2,
+            -1, 0, 0, -2, -1, -3, 4, -1,
+            0, 0, -1, -4, -1, 0, 1, 2]
 
-def test_division_wise_1():
-    input_dct = [
-        -415, -30, -61, 27, 56, -20, -2, 0,
-        4, -22, -61, 10, 13, -7, -9, 5,
-        -47, 7, 77, -25, -29, 10, 5, -6,
-        -49, 12, 34, -15, -10, 6, 2, 2,
-        12, -7, -13, -4, -2, 2, -3, 3,
-        -8, 3, 2, -6, -2, 1, 4, 2,
-        -1, 0, 0, -2, -1, -3, 4, -1,
-        0, 0, -1, -4, -1, 0, 1, 2]
+        output_expected = [
+            -26, -3, -6, 2, 2, -1, 0, 0,
+            0, -2, -4, 1, 1, 0, 0, 0,
+            -3, 1, 5, -1, -1, 0, 0, 0,
+            -3, 1, 2, -1, 0, 0, 0, 0,
+            1, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+        ]
 
-    output_expected = [
-        -26, -3, -6, 2, 2, -1, 0, 0,
-        0, -2, -4, 1, 1, 0, 0, 0,
-        -3, 1, 5, -1, -1, 0, 0, 0,
-        -3, 1, 2, -1, 0, 0, 0, 0,
-        1, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-    ]
+        output = quantization(input_dct)
+        output = [int(e) for e in output]
+        self.assertListEqual(output, output_expected, msg="Test failed")
 
-    output = quantization(input_dct)
-    for i in range(64):
-        if output[i] != output_expected[i]:
-            print("test_division_wise_1:", i, "\n",
-                  output[i],  output_expected[i])
+    def test_zigzag(self):
+        input_qtz = [
+            -26, -3, -6, 2, 2, -1, 0, 0,
+            0, -2, -4, 1, 1, 0, 0, 0,
+            -3, 1, 5, -1, -1, 0, 0, 0,
+            -3, 1, 2, -1, 0, 0, 0, 0,
+            1, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+        ]
 
+        output_expected = [
+            -26, -3, 0, -3, -2, -6, 2,
+            -4, 1, -3, 1, 1, 5, 1, 2,
+            -1, 1, -1, 2, 0, 0, 0, 0,
+            0, -1, -1
+        ]
 
-def test_zigzag():
-    input_qtz = [
-        -26, -3, -6, 2, 2, -1, 0, 0,
-        0, -2, -4, 1, 1, 0, 0, 0,
-        -3, 1, 5, -1, -1, 0, 0, 0,
-        -3, 1, 2, -1, 0, 0, 0, 0,
-        1, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-    ]
+        self.assertListEqual(zigzag(input_qtz), output_expected)
 
-    print(zigzag(input_qtz))
-
-
-test_zigzag()
+    def test_huffman_number(self):
+        self.assertEqual(huffman_number(-5), 2)
