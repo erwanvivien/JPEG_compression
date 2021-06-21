@@ -324,6 +324,12 @@ class TestJPEG(unittest.TestCase):
         for i in range(0, 14):
             self.assertEqual(huffman_AC_encoding(-3, i),
                              ACTable[i][2]["basecode"] << ACTable[i][2]["shift"])
+        self.assertEqual(huffman_AC_encoding(-2, 0), 0b0101)
+        self.assertEqual(huffman_AC_encoding(-6, 0), 0b100001)
+        self.assertEqual(huffman_AC_encoding(2, 0), 0b0110)
+        self.assertEqual(huffman_AC_encoding(-4, 0), 0b100011)
+        self.assertEqual(huffman_AC_encoding(-1, 5), 0b11110100)
+        self.assertEqual(huffman_AC_encoding(-1, 0), 0b000)
 
 
 if __name__ == "__main__":
