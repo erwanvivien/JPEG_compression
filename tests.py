@@ -263,6 +263,18 @@ class TestJPEG(unittest.TestCase):
         # self.assertEqual(huffman_AC_encoding(-1023, 12), 0b   )
         # self.assertEqual(huffman_AC_encoding(-1023, 13), 0b   )
 
+    def test_encode_zipzap(self):
+        zigzag = [
+            -9, -3, 0, -3, -2, -6, 2,
+            -4, 1, -3, 1, 1, 5, 1, 2,
+            -1, 1, -1, 2, 0, 0, 0, 0,
+            0, -1, -1
+        ]
+
+        res = parse_zigzag(zigzag)
+        self.assertEqual(
+            res, "1010110 0100 11100100 0101 100001 0110 100011 001 0100 001 001 100101 001 0110 000 001 000 0110 11110100 000 1010")
+
 
 if __name__ == "__main__":
     unittest.main()
