@@ -1,7 +1,15 @@
 import unittest
 from tables import ACTable, DCTable
-from compress import DCT_coeffs_8x8, quantization, huffman_AC_encoding, \
-    huffman_DC_encoding, zigzag, huffman_number
+from compress import DCT_coeffs_8x8, quantization, huffman_AC_encoding as huffman_AC, \
+    huffman_DC_encoding as huffman_DC, zigzag, huffman_number, parse_zigzag
+
+
+def huffman_AC_encoding(n, zeros=0):
+    return int(huffman_AC(n, zeros), 2)
+
+
+def huffman_DC_encoding(n):
+    return int(huffman_DC(n), 2)
 
 
 class TestJPEG(unittest.TestCase):

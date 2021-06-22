@@ -216,14 +216,37 @@ def huffman_number(n):
 def huffman_DC_encoding(n):
     cat = huffman_category(n)
     vals = DCTable[cat]
-    basecode, shift = vals["basecode"], vals["shift"]
+    basecode, shift, length = vals["basecode"], vals["shift"], vals["length"]
 
-    return basecode << shift | huffman_number(n)
+    s = f"{basecode << shift | huffman_number(n):b}"
+    s = ("0" * (length - len(s))) + s
+
+    return s
 
 
 def huffman_AC_encoding(n, zeros=0):
     cat = huffman_category(n)
     vals = ACTable[zeros][cat]
-    basecode, shift = vals["basecode"], vals["shift"]
+    basecode, shift, length = vals["basecode"], vals["shift"], vals["length"]
 
-    return basecode << shift | huffman_number(n)
+    s = f"{basecode << shift | huffman_number(n):b}"
+    s = ("0" * (length - len(s))) + s
+
+    return s
+
+
+def parse_zigzag(zigzag):
+    DC = huffman_DC_encoding(zigzag.pop(0))
+    ACs = []
+
+    while zigzag:
+        zeros = 0
+        while zigzag[0] == 0:
+            zigzag.pop(0)
+            zeros += 1
+        ACs.append(huffman_AC_encoding(zigzag.pop(0), zeros))
+
+    ACs.append("1010")
+
+    ACs_ = " ".join(ACs)
+    return f"{DC} {ACs_}"
