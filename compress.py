@@ -148,11 +148,13 @@ def extract_channel(image, channel_name):
 
     # Keeps first 2 dimensions (height / width)
     # In the 3rd (colors) keep only the one at idx
-    return image[:, :, idx]
+    img = image[:, :, idx]
+    flatten_list = [j for sub in img for j in sub]
+    return flatten_list
 
 
 def round_half(f: float):
-    return decimal.Decimal(f).to_integral_value(rounding=decimal.ROUND_HALF_UP)
+    return int(decimal.Decimal(f).to_integral_value(rounding=decimal.ROUND_HALF_UP))
 
 
 def quantization(dct):
@@ -250,3 +252,28 @@ def parse_zigzag(zigzag):
 
     ACs_ = " ".join(ACs)
     return f"{DC} {ACs_}"
+
+
+def compress(filename):
+    elapsed()
+    image = imageio.imread(filename)
+
+    padded_img = padding_8x8(image)
+    imageio.imwrite("out.jpg", padded_img)
+    elapsed()
+    blocks = blocks_8x8(padded_img)
+    colors = ["red", "green", "blue"]
+
+    mean = []
+    for b in blocks:
+        mean.append(elapsed(doPrint=False))
+        for color in colors:
+            cha = extract_channel(b, color)
+            dct = DCT_coeffs_8x8(cha)
+            qtz = quantization(dct)
+            zzg = zigzag(qtz)
+            out = parse_zigzag(zzg)
+
+
+if __name__ == '__main__':
+    compress("9.bmp")
