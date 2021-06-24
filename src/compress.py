@@ -258,7 +258,6 @@ def compress(filename):
     image = imageio.imread(filename)
 
     padded_img = padding_8x8(image)
-    imageio.imwrite("out.jpg", padded_img)
     blocks = blocks_8x8(padded_img)
     colors = ["red", "green", "blue"]
 
