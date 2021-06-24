@@ -243,7 +243,7 @@ def parse_zigzag(zigzag):
 
     while zigzag:
         zeros = 0
-        while zigzag[0] == 0:
+        while zigzag[0] == 0 and zeros < 15:
             zigzag.pop(0)
             zeros += 1
         ACs.append(huffman_AC_encoding(zigzag.pop(0), zeros))
@@ -255,25 +255,31 @@ def parse_zigzag(zigzag):
 
 
 def compress(filename):
-    elapsed()
     image = imageio.imread(filename)
 
     padded_img = padding_8x8(image)
     imageio.imwrite("out.jpg", padded_img)
-    elapsed()
     blocks = blocks_8x8(padded_img)
     colors = ["red", "green", "blue"]
 
-    mean = []
+    res = ""
     for b in blocks:
-        mean.append(elapsed(doPrint=False))
         for color in colors:
             cha = extract_channel(b, color)
             dct = DCT_coeffs_8x8(cha)
             qtz = quantization(dct)
             zzg = zigzag(qtz)
             out = parse_zigzag(zzg)
+            res += out
+
+    res = res.replace(" ", "")
+    print(res)
 
 
 if __name__ == '__main__':
-    compress("9.bmp")
+    import sys
+    argv = sys.argv[1:]
+    if argv:
+        compress(argv[0])
+    else:
+        compress("256.jpg")
