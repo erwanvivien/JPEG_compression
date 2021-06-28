@@ -266,6 +266,7 @@ def string_to_bytes(s):
 
 def compress(filename):
     image = imageio.imread(filename)
+    print(image)
 
     padded_img = padding_8x8(image)
     blocks = blocks_8x8(padded_img)
