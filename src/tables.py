@@ -224,6 +224,7 @@ for i, AC in enumerate(ACTable):
         res["run"] = i
         res["length"] = e[1]
         res["to_read"] = e[1] - len(e[0])
+        res["cat"] = j
         if (i == 0 or i == 15) and j == 0:
             invACTable[e[0]] = res
         elif j == 0:
@@ -232,13 +233,12 @@ for i, AC in enumerate(ACTable):
         invACTable[e[0]] = res
 
 
-print(invACTable)
-
 invDCTable = dict()
 for i, DC in enumerate(DCTable):
     res = dict()
     res["length"] = DC[1]
     res["to_read"] = DC[1] - len(DC[0])
+    res["cat"] = i
     invDCTable[DC[0]] = res
 
 
