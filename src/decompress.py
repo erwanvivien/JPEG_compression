@@ -59,6 +59,8 @@ def search_in(b, offset, dico):
 
 
 def huffman_number_2(s, cat):
+    if len(s) == 0:
+        return 0
     if len(s) == 1:
         return -1 if s == "0" else 1
     if s[0] == '0':
@@ -184,21 +186,31 @@ def unDCT_coeffs_8x8(image):
                     image[u * 8 + v] *
                     unDCT_coefficients_8x8(u, v))
 
-        l[n * 8 + m] = round(tmp + 128)
+        l[n * 8 + m] = round(tmp) + 128
+        if l[n * 8 + m] >= 256:
+            l[n * 8 + m] = 255
 
     return l
 
 
 if __name__ == '__main__':
     out = None
-    with open("out.ourjpg", "rb") as f:
-        out = f.read()
+
+    import sys
+    if sys.argv:
+        with open(sys.argv[1], "rb") as f:
+            out = f.read()
+    else:
+        with open("out.ourjpg", "rb") as f:
+            out = f.read()
 
     height = out[0] * 256 + out[1]
     width = out[2] * 256 + out[3]
     padded_zeros = out[4]
 
-    out = bytes_to_string(out[5:])[:-padded_zeros]
+    out = bytes_to_string(out[5:])
+    if padded_zeros > 0:
+        out = out[:-padded_zeros]
 
     pad_height = (8 - (height % 8)) % 8
     pad_width = (8 - (width % 8)) % 8
@@ -227,21 +239,6 @@ if __name__ == '__main__':
 
                 img_y = block_y * 8 + y
                 img_x = block_x * 8 + x
-                print(img_y, img_x)
-                # print()
                 image_out[img_y][img_x][j] = c
 
-    print(image_out)
     imageio.imwrite("test.png", image_out)
-
-
-# b = (unDCT_coeffs_8x8([364, 36, 135, 32, 10, -58, -117, -85, 152, 287, 15, 0, -13, 52, 79, 46, -6, -49, -103, -250, -4, 0, 43, 45, -116, 191, -26, -59, 197, -35, 41, -
-#                        26, 74, -1, -106, 78, 164, -83, -183, -90, -72, -118, 133, -201, 89, -55, 85, 189, 139, 6, 14, 58, 160, -250, 16, -36, -69, -10, 9, -41, -105, 24, 43, 193]))
-# expected = [255, 255, 255, 255, 255, 0, 0, 255, 255, 255, 255, 255, 0, 237, 237, 0, 255, 255, 255, 0, 185, 237, 255, 237, 255, 255, 0, 185, 185, 185,
-#             237, 237, 255, 255, 0, 185, 185, 185, 185, 0, 255, 255, 0, 185, 185, 185, 0, 255, 0, 0, 255, 0, 0, 0, 255, 255, 0, 255, 0, 255, 255, 255, 255, 255]
-
-# diff = [0] * 64
-# for i in range(64):
-#     diff[i] = b[i] - expected[i]
-
-# print(diff)
