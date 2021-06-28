@@ -2,6 +2,7 @@ import unittest
 from tables import ACTable, DCTable
 from compress import DCT_coeffs_8x8, quantization, huffman_AC_encoding as huffman_AC, \
     huffman_DC_encoding as huffman_DC, zigzag, huffman_number, parse_zigzag
+from decompress import huffman_number_2
 
 
 def huffman_AC_encoding(n, zeros=0):
@@ -274,6 +275,14 @@ class TestJPEG(unittest.TestCase):
         res = parse_zigzag(zigzag)
         self.assertEqual(
             res, "1010110 0100 11100100 0101 100001 0110 100011 001 0100 001 001 100101 001 0110 000 001 000 0110 11110100 000 1010")
+
+    def test_huffman_number_2(self):
+        self.assertEqual(huffman_number_2("00", 2), -3)
+        self.assertEqual(huffman_number_2("10", 2), 2)
+        self.assertEqual(huffman_number_2("000", 3), -7)
+        self.assertEqual(huffman_number_2("011", 3), -4)
+        self.assertEqual(huffman_number_2("100", 3), 4)
+        self.assertEqual(huffman_number_2("111", 3), 7)
 
 
 if __name__ == "__main__":
