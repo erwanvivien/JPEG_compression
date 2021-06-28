@@ -139,8 +139,7 @@ def extract_channel(image, channel_name):
     # Keeps first 2 dimensions (height / width)
     # In the 3rd (colors) keep only the one at idx
     img = image[:, :, idx]
-    flatten_list = [j for sub in img for j in sub]
-    return flatten_list
+    return img.flatten()
 
 
 def round_half(f: float):
