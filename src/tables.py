@@ -220,13 +220,19 @@ ACTable = [
 invACTable = dict()
 for i, AC in enumerate(ACTable):
     for j, e in enumerate(AC):
+        res = dict()
+        res["run"] = i
+        res["length"] = e[1]
+        res["to_read"] = e[1] - len(e[0])
         if (i == 0 or i == 15) and j == 0:
-            invACTable[e[0]] = (e[1] - len(e[0]))
+            invACTable[e[0]] = res
         elif j == 0:
             continue
 
-        invACTable[e[0]] = (e[1] - len(e[0]))
+        invACTable[e[0]] = res
 
+
+print(invACTable)
 
 invDCTable = dict()
 for i, DC in enumerate(DCTable):
