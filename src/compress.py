@@ -75,10 +75,6 @@ def blocks_8x8(image):
     return list(blocks_8x8_generator(image))
 
 
-def DCT_cosine_8x8(x: float, i):
-    return ALL_COSINES[i][x]
-
-
 def DCT_coefficients_8x8(i: int, j: int):
     # result = 1 / math.sqrt(16)
     result = 1
@@ -112,8 +108,8 @@ def DCT_coeffs_8x8(image):
     for i, j in itertools.product(range8, range8):
         idx = i * 8 + j
         for y, x in itertools.product(range8, range8):
-            array[idx] += (DCT_cosine_8x8(x, i) *
-                           DCT_cosine_8x8(y, j) *
+            array[idx] += (ALL_COSINES[i][x] *
+                           ALL_COSINES[j][y] *
                            image[y + x * 8])
 
         array[idx] *= DCT_coefficients_8x8(i, j)
@@ -149,7 +145,6 @@ def quantization(dct):
     assert len(dct) == 64
     for i in range(64):
         dct[i] /= JPEG_MATRIX_QUANTIFICATION[i]
-        dct[i] = round_half(dct[i])
 
     return np.rint(dct).astype(np.int64)
 
