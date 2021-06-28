@@ -96,21 +96,6 @@ def DCT_coefficients_8x8(i: int, j: int):
     return result
 
 
-def DCT_coeffs_8x8_generator(image):
-    range8 = range(8)
-    for i, j in itertools.product(range8, range8):
-        tmp = 0.0
-
-        for y, x in itertools.product(range8, range8):
-            tmp += (DCT_cosine_8x8(x, i) *
-                    DCT_cosine_8x8(y, j) *
-                    (image[y + x * 8] - 128))
-
-        tmp *= DCT_coefficients_8x8(i, j)
-
-        yield round(tmp)
-
-
 def DCT_coeffs_8x8(image):
     """
     `@params`: an greyscale image (1D)
@@ -119,7 +104,21 @@ def DCT_coeffs_8x8(image):
     """
 
     assert len(image) == 64
-    return list(DCT_coeffs_8x8_generator(image))
+
+    image = image - 128
+    array = np.zeros(64, dtype=np.float64)
+
+    range8 = range(8)
+    for i, j in itertools.product(range8, range8):
+        idx = i * 8 + j
+        for y, x in itertools.product(range8, range8):
+            array[idx] += (DCT_cosine_8x8(x, i) *
+                           DCT_cosine_8x8(y, j) *
+                           image[y + x * 8])
+
+        array[idx] *= DCT_coefficients_8x8(i, j)
+
+    return array
 
 
 def extract_channel(image, channel_name):
@@ -152,7 +151,7 @@ def quantization(dct):
         dct[i] /= JPEG_MATRIX_QUANTIFICATION[i]
         dct[i] = round_half(dct[i])
 
-    return dct
+    return np.rint(dct).astype(np.int64)
 
 
 def zigzag_generator(input_qtz):
@@ -255,6 +254,7 @@ def string_to_bytes(s):
 
 def compress(filename):
     image = imageio.imread(filename)
+    image = image.astype(np.int16)
 
     padded_img = padding_8x8(image)
     blocks = blocks_8x8(padded_img)
