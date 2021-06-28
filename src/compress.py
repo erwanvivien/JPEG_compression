@@ -254,6 +254,16 @@ def parse_zigzag(zigzag):
     return f"{DC} {ACs_}"
 
 
+def string_to_bytes(s):
+    bs = []
+    for i in range(0, len(s), 8):
+        tmp = 0
+        for j in range(8):
+            tmp += int(s[i + j]) * (2 ** (7 - j))
+        bs.append(tmp)
+    return bs
+
+
 def compress(filename):
     image = imageio.imread(filename)
 
@@ -272,7 +282,18 @@ def compress(filename):
             res += out
 
     res = res.replace(" ", "")
-    print(res)
+
+    height, width, _ = get_dimensions(image)
+    padded_zeros = (8 - (len(res) % 8)) % 8
+
+    res += "0" * padded_zeros
+    bytes_to_write = [height // 256, height % 256,
+                      width // 256, width % 256,
+                      padded_zeros]
+
+    bytes_to_write = bytes(bytes_to_write + string_to_bytes(res))
+    with open("out.ourjpg", "wb") as f:
+        f.write(bytes_to_write)
 
 
 if __name__ == '__main__':
