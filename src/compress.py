@@ -38,22 +38,7 @@ def get_dimensions(image):
 
     `@exceptions`: can crash if image is empty
     """
-    y = len(image)
-    if y <= 0:
-        print(f"Image is empty")
-        exit(1)
-
-    x = len(image[0])
-    if x <= 0:
-        print(f"Image is empty")
-        exit(1)
-
-    depth = len(image[0][0])
-    if x <= 0:
-        print(f"Image is empty")
-        exit(1)
-
-    return y, x, depth
+    return image.shape
 
 
 def padding_8x8(image):
