@@ -236,7 +236,10 @@ print(invACTable)
 
 invDCTable = dict()
 for i, DC in enumerate(DCTable):
-    invDCTable[DC[0]] = (DC[1] - len(DC[0]))
+    res = dict()
+    res["length"] = DC[1]
+    res["to_read"] = DC[1] - len(DC[0])
+    invDCTable[DC[0]] = res
 
 
 DCTable = [{"basecode": int(e[0], 2),
