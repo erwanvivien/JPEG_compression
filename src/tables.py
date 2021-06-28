@@ -217,6 +217,18 @@ ACTable = [
     ]
 ]
 
+invACTable = dict()
+for i, AC in enumerate(ACTable):
+    for j, e in enumerate(AC):
+        if (i == 0 or i == 15) and j == 0:
+            print(i, j, e)
+            invACTable[e[0]] = (e[1] - len(e[0]))
+        elif j == 0:
+            continue
+
+        invACTable[e[0]] = (e[1] - len(e[0]))
+
+
 DCTable = [{"basecode": int(e[0], 2),
             "length": e[1],
             "shift": e[1] - len(e[0])} for e in DCTable]
