@@ -302,4 +302,4 @@ if __name__ == '__main__':
     if argv:
         compress(argv[0])
     else:
-        compress("256.jpg")
+        compress("assets/256.jpg")
