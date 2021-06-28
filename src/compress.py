@@ -21,6 +21,13 @@ JPEG_MATRIX_QUANTIFICATION = [16, 11, 10, 16, 24, 40, 51, 61,
                               24, 35, 55, 64, 81, 104, 113, 92,
                               49, 64, 78, 87, 703, 121, 120, 101,
                               72, 92, 95, 98, 112, 100, 103, 99]
+JPEG_MATRIX_QUANTIFICATION = np.array(JPEG_MATRIX_QUANTIFICATION)
+
+ALL_COSINES = np.zeros((8, 8))
+for i, j in itertools.product(range(8), range(8)):
+    ALL_COSINES[i][j] = math.cos(
+        (i * (2 * j + 1) * math.pi) / 16
+    )
 
 
 def get_dimensions(image):
@@ -84,9 +91,7 @@ def blocks_8x8(image):
 
 
 def DCT_cosine_8x8(x: float, i):
-    return math.cos(
-        (i * (2 * x + 1) * math.pi) / 16
-    )
+    return ALL_COSINES[i][x]
 
 
 def DCT_coefficients_8x8(i: int, j: int):
@@ -266,7 +271,6 @@ def string_to_bytes(s):
 
 def compress(filename):
     image = imageio.imread(filename)
-    print(image)
 
     padded_img = padding_8x8(image)
     blocks = blocks_8x8(padded_img)
