@@ -262,8 +262,8 @@ if __name__ == '__main__':
     argv = sys.argv[1:]
 
     q = 50
-    q_idx = argv.index("-q")
-    if q_idx >= 0:
+    if "-q" in argv:
+        q_idx = argv.index("-q")
         try:
             q = int(argv[q_idx + 1])
         except:
