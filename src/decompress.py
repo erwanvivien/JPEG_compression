@@ -155,7 +155,7 @@ def unquantization(dct):
 def unDCT_coeffs_8x8(image):
     image = image.reshape((8, 8))
     res = np.dot(np.dot(DCT_t, image), DCT)
-    return res.reshape(64)
+    return res.reshape(64).clip(0, 255)
 
 
 if __name__ == '__main__':
