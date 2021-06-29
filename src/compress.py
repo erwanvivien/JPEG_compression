@@ -13,6 +13,8 @@ import random
 from tables import DCTable
 from tables import ACTable
 
+import sys
+
 JPEG_MATRIX_QUANTIFICATION = [16, 11, 10, 16, 24, 40, 51, 61,
                               12, 12, 14, 19, 26, 58, 60, 55,
                               14, 13, 16, 24, 40, 57, 69, 56,
@@ -257,8 +259,24 @@ def compress(filename):
 
 
 if __name__ == '__main__':
-    import sys
     argv = sys.argv[1:]
+
+    q = 50
+    q_idx = argv.index("-q")
+    if q_idx >= 0:
+        try:
+            q = int(argv[q_idx + 1])
+        except:
+            print("Wrong usage of -q: ./compress.py file -q <value>")
+
+    if q != 50:
+        if q > 50:
+            alpha = 200 - 2 * q
+        else:
+            alpha = 5000 / q
+        JPEG_MATRIX_QUANTIFICATION = (
+            (alpha * JPEG_MATRIX_QUANTIFICATION) + 50) / 100
+
     if argv:
         compress(argv[0])
     else:
