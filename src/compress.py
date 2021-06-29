@@ -23,11 +23,23 @@ JPEG_MATRIX_QUANTIFICATION = [16, 11, 10, 16, 24, 40, 51, 61,
                               72, 92, 95, 98, 112, 100, 103, 99]
 JPEG_MATRIX_QUANTIFICATION = np.array(JPEG_MATRIX_QUANTIFICATION)
 
-ALL_COSINES = np.zeros((8, 8))
+ALL_COSINES = np.zeros(64)
 for i, j in itertools.product(range(8), range(8)):
-    ALL_COSINES[i][j] = math.cos(
+    ALL_COSINES[i * 8 + j] = math.cos(
         (i * (2 * j + 1) * math.pi) / 16
     )
+
+
+DCT = np.zeros((8, 8))
+for i, j in itertools.product(range(8), range(8)):
+    if i == 0:
+        DCT[i][j] = math.sqrt(2) / 2
+    else:
+        DCT[i][j] = math.cos(((2 * j + 1) * i * math.pi) / 16)
+DCT = (1/2) * DCT
+
+
+DCT_t = DCT.transpose()
 
 
 def get_dimensions(image):
@@ -75,46 +87,10 @@ def blocks_8x8(image):
     return list(blocks_8x8_generator(image))
 
 
-def DCT_coefficients_8x8(i: int, j: int):
-    # result = 1 / math.sqrt(16)
-    result = 1
-
-    if i == 0:
-        result *= math.sqrt(1 / 8)
-    else:
-        result *= math.sqrt(2 / 8)
-
-    if j == 0:
-        result *= math.sqrt(1 / 8)
-    else:
-        result *= math.sqrt(2 / 8)
-
-    return result
-
-
 def DCT_coeffs_8x8(image):
-    """
-    `@params`: an greyscale image (1D)
-
-    `@returns`: generates a DCT for an image block
-    """
-
-    assert len(image) == 64
-
-    image = image - 128
-    array = np.zeros(64, dtype=np.float64)
-
-    range8 = range(8)
-    for i, j in itertools.product(range8, range8):
-        idx = i * 8 + j
-        for y, x in itertools.product(range8, range8):
-            array[idx] += (ALL_COSINES[i][x] *
-                           ALL_COSINES[j][y] *
-                           image[y + x * 8])
-
-        array[idx] *= DCT_coefficients_8x8(i, j)
-
-    return array
+    image = image.reshape((8, 8))
+    res = np.dot(np.dot(DCT, image), DCT_t)
+    return res.reshape(64)
 
 
 def extract_channel(image, channel_name):

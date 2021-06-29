@@ -15,7 +15,15 @@ from tables import ACTable
 from tables import invDCTable
 from tables import invACTable
 
-from compress import zigzag, round_half
+from compress import zigzag
+from compress import ALL_COSINES
+from compress import DCT
+from compress import DCT_t
+
+
+def round_half(f: float):
+    return int(decimal.Decimal(f).to_integral_value(rounding=decimal.ROUND_HALF_UP))
+
 
 JPEG_MATRIX_QUANTIFICATION = [16, 11, 10, 16, 24, 40, 51, 61,
                               12, 12, 14, 19, 26, 58, 60, 55,
@@ -127,7 +135,7 @@ unzig_matrix = zigzag(list(range(64)))
 
 
 def unzigzag(m):
-    res = [0] * 64
+    res = np.zeros(64)
     for i in range(64):
         if i < len(m):
             res[unzig_matrix[i]] = m[i]
@@ -144,60 +152,17 @@ def unquantization(dct):
     return dct
 
 
-def unDCT_cosine_8x8(x: float, i):
-    return math.cos(
-        (i * (2 * x + 1) * math.pi) / 16
-    )
-
-
-def unDCT_coefficients_8x8(i: int, j: int):
-    # result = 1 / math.sqrt(16)
-    result = 1
-
-    if i == 0:
-        result *= math.sqrt(1 / 8)
-    else:
-        result *= math.sqrt(2 / 8)
-
-    if j == 0:
-        result *= math.sqrt(1 / 8)
-    else:
-        result *= math.sqrt(2 / 8)
-
-    return result
-
-
 def unDCT_coeffs_8x8(image):
-    """
-    `@params`: an greyscale image (1D)
-
-    `@returns`: generates a DCT for an image block
-    """
-
-    assert len(image) == 64
-    l = [0] * 64
-    range8 = range(8)
-    for m, n in itertools.product(range8, range8):
-        tmp = 0.0
-
-        for u, v in itertools.product(range8, range8):
-            tmp += (unDCT_cosine_8x8(n, u) *
-                    unDCT_cosine_8x8(m, v) *
-                    image[u * 8 + v] *
-                    unDCT_coefficients_8x8(u, v))
-
-        l[n * 8 + m] = round(tmp) + 128
-        if l[n * 8 + m] >= 256:
-            l[n * 8 + m] = 255
-
-    return l
+    image = image.reshape((8, 8))
+    res = np.dot(np.dot(DCT_t, image), DCT)
+    return res.reshape(64)
 
 
 if __name__ == '__main__':
     out = None
 
     import sys
-    if sys.argv:
+    if len(sys.argv) > 1:
         with open(sys.argv[1], "rb") as f:
             out = f.read()
     else:
@@ -234,11 +199,8 @@ if __name__ == '__main__':
             unqtz = unquantization(unzzg)
             undct = unDCT_coeffs_8x8(unqtz)
 
-            for tmp, c in enumerate(undct):
-                y, x = tmp // 8, tmp % 8
-
-                img_y = block_y * 8 + y
-                img_x = block_x * 8 + x
-                image_out[img_y][img_x][j] = c
+            reshp = undct.reshape((8, 8))
+            image_out[block_y * 8:block_y * 8 + 8, block_x * 8:block_x * 8+8, j] = \
+                reshp
 
     imageio.imwrite("test.png", image_out)
