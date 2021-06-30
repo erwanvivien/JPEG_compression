@@ -21,10 +21,6 @@ from compress import DCT
 from compress import DCT_t
 
 
-def round_half(f: float):
-    return int(decimal.Decimal(f).to_integral_value(rounding=decimal.ROUND_HALF_UP))
-
-
 JPEG_MATRIX_QUANTIFICATION = [16, 11, 10, 16, 24, 40, 51, 61,
                               12, 12, 14, 19, 26, 58, 60, 55,
                               14, 13, 16, 24, 40, 57, 69, 56,
@@ -33,6 +29,7 @@ JPEG_MATRIX_QUANTIFICATION = [16, 11, 10, 16, 24, 40, 51, 61,
                               24, 35, 55, 64, 81, 104, 113, 92,
                               49, 64, 78, 87, 703, 121, 120, 101,
                               72, 92, 95, 98, 112, 100, 103, 99]
+JPEG_MATRIX_QUANTIFICATION = np.array(JPEG_MATRIX_QUANTIFICATION)
 
 
 def bytes_to_string(b):
@@ -147,9 +144,8 @@ def unquantization(dct):
     assert len(dct) == 64
     for i in range(64):
         dct[i] *= JPEG_MATRIX_QUANTIFICATION[i]
-        dct[i] = round_half(dct[i])
 
-    return dct
+    return np.rint(dct).astype(np.int64)
 
 
 def unDCT_coeffs_8x8(image):
@@ -158,22 +154,25 @@ def unDCT_coeffs_8x8(image):
     return res.reshape(64).clip(0, 255)
 
 
-if __name__ == '__main__':
+def decompress(filename):
+    global JPEG_MATRIX_QUANTIFICATION
     out = None
-
-    import sys
-    if len(sys.argv) > 1:
-        with open(sys.argv[1], "rb") as f:
-            out = f.read()
-    else:
-        with open("out.ourjpg", "rb") as f:
-            out = f.read()
+    with open(filename, "rb") as f:
+        out = f.read()
 
     height = out[0] * 256 + out[1]
     width = out[2] * 256 + out[3]
     padded_zeros = out[4]
+    q = out[5]
+    if q != 50:
+        if q > 50:
+            alpha = 200 - 2 * q
+        else:
+            alpha = 5000 / q
+        JPEG_MATRIX_QUANTIFICATION = (
+            (alpha * JPEG_MATRIX_QUANTIFICATION) + 50) / 100
 
-    out = bytes_to_string(out[5:])
+    out = bytes_to_string(out[6:])
     if padded_zeros > 0:
         out = out[:-padded_zeros]
 
@@ -204,3 +203,12 @@ if __name__ == '__main__':
                 reshp
 
     imageio.imwrite("test.png", image_out)
+
+
+if __name__ == '__main__':
+    import sys
+    argv = sys.argv[1:]
+    if argv:
+        decompress(argv[0])
+    else:
+        decompress("out.ourjpg")

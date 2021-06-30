@@ -225,6 +225,9 @@ def string_to_bytes(s):
     return bs
 
 
+q = 50
+
+
 def compress(filename):
     image = imageio.imread(filename)
     image = image.astype(np.int16)
@@ -251,7 +254,7 @@ def compress(filename):
     res += "0" * padded_zeros
     bytes_to_write = [height // 256, height % 256,
                       width // 256, width % 256,
-                      padded_zeros]
+                      padded_zeros, q]
 
     bytes_to_write = bytes(bytes_to_write + string_to_bytes(res))
     with open("out.ourjpg", "wb") as f:
@@ -261,7 +264,6 @@ def compress(filename):
 if __name__ == '__main__':
     argv = sys.argv[1:]
 
-    q = 50
     if "-q" in argv:
         q_idx = argv.index("-q")
         try:
