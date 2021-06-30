@@ -202,7 +202,7 @@ def decompress(filename):
             image_out[block_y * 8:block_y * 8 + 8, block_x * 8:block_x * 8+8, j] = \
                 reshp
 
-    imageio.imwrite("test.png", image_out)
+    imageio.imwrite("decoded_image.bmp", image_out[:height, :width])
 
 
 if __name__ == '__main__':
